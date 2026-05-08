@@ -13,7 +13,7 @@ const envSchema = z.object({
   REFRESH_TOKEN_SECRET: z.string().min(20),
   REFRESH_TOKEN_EXPIRES_IN: z.string().default("7d"),
   BCRYPT_SALT_ROUNDS: z.coerce.number().int().positive().default(12),
-  COOKIE_DOMAIN: z.string().optional(),
+  COOKIE_DOMAIN: z.preprocess((value) => (value === "" ? undefined : value), z.string().optional()),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
