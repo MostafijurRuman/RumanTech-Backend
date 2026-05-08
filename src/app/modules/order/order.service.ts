@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus, Prisma } from "@/generated/prisma/client";
+import { NotificationType, OrderStatus, PaymentStatus, Prisma, UserRole } from "@/generated/prisma/client";
 import { QueryBuilder } from "@/app/builders/QueryBuilder";
 import { httpStatus } from "@/app/constants/http-status";
 import { AppError } from "@/app/errors/AppError";
@@ -75,6 +75,33 @@ export const orderService = {
           items: { create: orderItems },
         },
         include: { items: { include: { product: true } } },
+      });
+
+      const admins = await tx.user.findMany({
+        where: { role: UserRole.ADMIN, isActive: true, deletedAt: null },
+        select: { id: true },
+      });
+
+      if (admins.length) {
+        await tx.notification.createMany({
+          data: admins.map((admin) => ({
+            userId: admin.id,
+            title: "New order received",
+            message: `${payload.shippingName} placed order #${order.id.slice(0, 8)} for BDT ${total.toFixed(2)}.`,
+            type: NotificationType.ORDER,
+            href: "/admin/orders",
+          })),
+        });
+      }
+
+      await tx.notification.create({
+        data: {
+          userId,
+          title: "Order placed",
+          message: `Your order #${order.id.slice(0, 8)} was placed successfully.`,
+          type: NotificationType.ORDER,
+          href: "/dashboard/orders",
+        },
       });
 
       await Promise.all(
