@@ -135,4 +135,20 @@ export const userService = {
       select: userSelect,
     });
   },
+
+  async updateStatus(userId: string, isActive: boolean) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { isActive },
+      select: userSelect,
+    });
+  },
+
+  async softDelete(userId: string) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { deletedAt: new Date(), isActive: false },
+    });
+    return null;
+  },
 };

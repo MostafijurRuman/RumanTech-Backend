@@ -54,6 +54,7 @@ const categoryMap: Record<string, { name: string; description: string }> = {
 };
 
 const categoriesToFetch = Object.keys(categoryMap);
+const usdToBdtRate = 120;
 
 function slugify(value: string) {
   return value
@@ -110,6 +111,7 @@ async function seedProducts() {
     const brandName = product.brand?.trim() || "RumanTech Select";
     const brandSlug = slugify(brandName);
     const productSlug = `${slugify(product.title)}-${product.id}`;
+    const bdtPrice = Math.round(product.price * usdToBdtRate);
 
     const category = await prisma.category.upsert({
       where: { slug: categorySlug },
@@ -153,7 +155,7 @@ async function seedProducts() {
         name: product.title,
         slug: productSlug,
         description: product.description,
-        price: new Prisma.Decimal(product.price),
+        price: new Prisma.Decimal(bdtPrice),
         stock: Math.max(product.stock, 0),
         images: buildImages(product),
         specs: buildSpecs(product),
@@ -170,7 +172,7 @@ async function seedProducts() {
         slug: productSlug,
         description: product.description,
         sku: product.sku,
-        price: new Prisma.Decimal(product.price),
+        price: new Prisma.Decimal(bdtPrice),
         stock: Math.max(product.stock, 0),
         images: buildImages(product),
         specs: buildSpecs(product),

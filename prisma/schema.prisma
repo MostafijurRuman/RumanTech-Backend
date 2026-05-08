@@ -35,6 +35,15 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum NotificationType {
+  SYSTEM
+  ORDER
+  PAYMENT
+  PRODUCT
+  PROMOTION
+  SECURITY
+}
+
 model User {
   id                 String     @id @default(uuid())
   name               String
@@ -56,6 +65,7 @@ model User {
   reviews            Review[]
   cartItems          Cart[]
   wishlist           Wishlist[]
+  notifications      Notification[]
 
   @@index([email])
   @@index([passwordResetToken])
@@ -168,6 +178,8 @@ model Order {
 
   @@index([userId])
   @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
   @@index([deletedAt])
 }
 
@@ -231,4 +243,21 @@ model Wishlist {
   @@unique([userId, productId])
   @@index([userId])
   @@index([productId])
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String?
+  title     String
+  message   String
+  type      NotificationType @default(SYSTEM)
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  user      User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([readAt])
+  @@index([createdAt])
 }

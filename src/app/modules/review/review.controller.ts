@@ -13,6 +13,14 @@ export const reviewController = {
     const result = await reviewService.getProductReviews(String(req.params.productId));
     sendResponse(res, { success: true, statusCode: httpStatus.OK, message: "Reviews retrieved", data: result });
   }),
+  myReviews: catchAsync(async (req, res) => {
+    const result = await reviewService.getMyReviews(req.user!.id);
+    sendResponse(res, { success: true, statusCode: httpStatus.OK, message: "Reviews retrieved", data: result });
+  }),
+  getAll: catchAsync(async (_req, res) => {
+    const result = await reviewService.getAll();
+    sendResponse(res, { success: true, statusCode: httpStatus.OK, message: "Reviews retrieved", data: result });
+  }),
   update: catchAsync(async (req, res) => {
     const result = await reviewService.update(req.user!.id, String(req.params.id), req.body);
     sendResponse(res, { success: true, statusCode: httpStatus.OK, message: "Review updated", data: result });

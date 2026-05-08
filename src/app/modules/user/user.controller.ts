@@ -84,4 +84,23 @@ export const userController = {
       data: result,
     });
   }),
+
+  updateStatus: catchAsync(async (req, res) => {
+    const result = await userService.updateStatus(String(req.params.id), Boolean(req.body.isActive));
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User status updated successfully",
+      data: result,
+    });
+  }),
+
+  deleteUser: catchAsync(async (req, res) => {
+    await userService.softDelete(String(req.params.id));
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "User deleted successfully",
+    });
+  }),
 };

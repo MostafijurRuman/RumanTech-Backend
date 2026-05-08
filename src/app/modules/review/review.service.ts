@@ -44,6 +44,25 @@ export const reviewService = {
     });
   },
 
+  async getMyReviews(userId: string) {
+    return prisma.review.findMany({
+      where: { userId, deletedAt: null },
+      include: { product: { select: { id: true, name: true, slug: true, images: true } } },
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
+  async getAll() {
+    return prisma.review.findMany({
+      where: { deletedAt: null },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        product: { select: { id: true, name: true, slug: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
   async update(userId: string, reviewId: string, payload: { rating?: number; comment?: string }) {
     const review = await prisma.review.findFirst({ where: { id: reviewId, userId, deletedAt: null } });
     if (!review) throw new AppError(httpStatus.NOT_FOUND, "Review not found");

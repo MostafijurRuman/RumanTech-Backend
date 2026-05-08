@@ -28,4 +28,16 @@ export const userValidation = {
   updateAddress: z.object({
     body: addressBody.partial(),
   }),
+
+  updateRole: z.object({
+    body: z.object({
+      role: z.enum(["ADMIN", "USER"]),
+    }),
+  }),
+
+  updateStatus: z.object({
+    body: z.object({
+      isActive: z.boolean(),
+    }),
+  }),
 };

@@ -22,6 +22,8 @@ router.patch(
 router.delete("/me/addresses/:id", userController.deleteAddress);
 
 router.get("/", authorize(UserRole.ADMIN), userController.getUsers);
-router.patch("/:id/role", authorize(UserRole.ADMIN), userController.updateRole);
+router.patch("/:id/role", authorize(UserRole.ADMIN), validateRequest(userValidation.updateRole), userController.updateRole);
+router.patch("/:id/status", authorize(UserRole.ADMIN), validateRequest(userValidation.updateStatus), userController.updateStatus);
+router.delete("/:id", authorize(UserRole.ADMIN), userController.deleteUser);
 
 export const userRoutes = router;
