@@ -4,6 +4,8 @@ export type JwtPayload = {
   id: string;
   email: string;
   role: UserRole;
+  iat?: number;
+  exp?: number;
 };
 
 export type RegisterInput = {
@@ -15,4 +17,18 @@ export type RegisterInput = {
 export type LoginInput = {
   email: string;
   password: string;
+};
+
+export type ChangePasswordInput = {
+  oldPassword: string;
+  newPassword: string;
+};
+
+export type ForgotPasswordInput = {
+  email: string;
+};
+
+export type ResetPasswordInput = {
+  token: string;
+  newPassword: string;
 };

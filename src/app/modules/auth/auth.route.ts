@@ -11,5 +11,21 @@ router.post("/login", validateRequest(authValidation.login), authController.logi
 router.post("/refresh-token", authController.refreshToken);
 router.post("/logout", authController.logout);
 router.get("/me", authenticate, authController.me);
+router.patch(
+  "/change-password",
+  authenticate,
+  validateRequest(authValidation.changePassword),
+  authController.changePassword
+);
+router.post(
+  "/forgot-password",
+  validateRequest(authValidation.forgotPassword),
+  authController.forgotPassword
+);
+router.post(
+  "/reset-password",
+  validateRequest(authValidation.resetPassword),
+  authController.resetPassword
+);
 
 export const authRoutes = router;

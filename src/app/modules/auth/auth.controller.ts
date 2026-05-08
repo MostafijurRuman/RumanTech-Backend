@@ -3,7 +3,6 @@ import { sendResponse } from "@/app/helpers/sendResponse";
 import { catchAsync } from "@/app/utils/catchAsync";
 import { authService } from "@/app/modules/auth/auth.service";
 import {
-  accessTokenCookieName,
   authCookieOptions,
   refreshTokenCookieName,
 } from "@/app/modules/auth/auth.utils";
@@ -12,11 +11,6 @@ const setAuthCookies = (
   res: Parameters<typeof sendResponse>[0],
   tokens: { accessToken: string; refreshToken?: string }
 ) => {
-  res.cookie(accessTokenCookieName, tokens.accessToken, {
-    ...authCookieOptions,
-    maxAge: 15 * 60 * 1000,
-  });
-
   if (tokens.refreshToken) {
     res.cookie(refreshTokenCookieName, tokens.refreshToken, {
       ...authCookieOptions,
@@ -69,7 +63,6 @@ export const authController = {
   }),
 
   logout: catchAsync(async (_req, res) => {
-    res.clearCookie(accessTokenCookieName, authCookieOptions);
     res.clearCookie(refreshTokenCookieName, authCookieOptions);
 
     sendResponse(res, {
@@ -80,11 +73,44 @@ export const authController = {
   }),
 
   me: catchAsync(async (req, res) => {
+    const user = await authService.getCurrentUser(req.user!.id);
+
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "Authenticated user profile",
-      data: req.user,
+      data: user,
+    });
+  }),
+
+  changePassword: catchAsync(async (req, res) => {
+    await authService.changePassword(req.user!.id, req.body);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Password changed successfully",
+    });
+  }),
+
+  forgotPassword: catchAsync(async (req, res) => {
+    const result = await authService.forgotPassword(req.body);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Password reset instructions generated",
+      data: result,
+    });
+  }),
+
+  resetPassword: catchAsync(async (req, res) => {
+    await authService.resetPassword(req.body);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Password reset successful",
     });
   }),
 };

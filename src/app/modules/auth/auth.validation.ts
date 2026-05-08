@@ -22,4 +22,24 @@ export const authValidation = {
       password: z.string().min(1),
     }),
   }),
+
+  changePassword: z.object({
+    body: z.object({
+      oldPassword: z.string().min(1),
+      newPassword: password,
+    }),
+  }),
+
+  forgotPassword: z.object({
+    body: z.object({
+      email: z.string().email().toLowerCase(),
+    }),
+  }),
+
+  resetPassword: z.object({
+    body: z.object({
+      token: z.string().min(20),
+      newPassword: password,
+    }),
+  }),
 };

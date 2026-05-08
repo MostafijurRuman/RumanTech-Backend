@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import { env, isProduction } from "@/app/config/env";
 import type { JwtPayload } from "@/app/modules/auth/auth.interface";
@@ -41,3 +42,14 @@ export const authCookieOptions = {
   path: "/",
   domain: isProduction ? env.COOKIE_DOMAIN : undefined,
 } as const;
+
+export function createPasswordResetToken() {
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+
+  return { rawToken, hashedToken };
+}
+
+export function hashPasswordResetToken(token: string) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
